@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace AbcBank.Test
 {
     [TestFixture]
     public class CustomerTest
     {
-
+        [Test]
+        public void TestNewCustomerShouldNotHaveAccounts()
+        {
+            Customer henry = new Customer("Henry");
+            Assert.AreEqual("Henry",henry.getName());
+            Assert.AreEqual(0,henry.getNumberOfAccounts());
+        }
         [Test] //Test customer statement generation
-        public void testApp()
+        public void TestRenderCustomerStatement()
         {
 
             Account checkingAccount = new Account(Account.CHECKING);
@@ -54,13 +55,35 @@ namespace AbcBank.Test
             Assert.AreEqual(2, oscar.getNumberOfAccounts());
         }
 
-        [Ignore]
+        [Test]
         public void testThreeAcounts()
         {
             Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
+                .openAccount(new Account(Account.SAVINGS))
+                .openAccount(new Account(Account.CHECKING))
+                .openAccount(new Account(Account.MAXI_SAVINGS));
+                    
             Assert.AreEqual(3, oscar.getNumberOfAccounts());
         }
+
+
+        [Test]
+        public void TestTotalInterestEarningOnAllAccounts()
+        {
+            Customer oscar = new Customer("Oscar");
+            Account checking=new Account(Account.CHECKING);
+            Account saving=new Account(Account.SAVINGS);
+            Account maxiSaving = new Account(Account.SAVINGS);
+            oscar.openAccount(checking).openAccount(saving).openAccount(maxiSaving);
+            Assert.AreEqual(3, oscar.getNumberOfAccounts());
+            checking.deposit(1000);
+            saving.deposit(2000);
+            maxiSaving.deposit(3000);
+            double checkingInterest = checking.interestEarned();
+            double savingInterest = saving.interestEarned();
+            double maxiSavingInterest = maxiSaving.interestEarned();
+            Assert.AreEqual(checkingInterest + savingInterest + maxiSavingInterest, oscar.totalInterestEarned(), 1e-15);
+        }
+
     }
 }
