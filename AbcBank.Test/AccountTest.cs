@@ -14,6 +14,23 @@ namespace AbcBank.Test
     {
         protected static readonly double DOUBLE_DELTA = 1e-15;
         [Test]
+        public void NegativeDepositShouldThrowException()
+        {
+            Account account = InstantiateAccount();
+            Assert.Throws<ArgumentException>(() => {
+                account.deposit(-100);
+            });
+
+        }
+        [Test]
+        public void NegativeWithdrawalShouldThrowException()
+        {
+            Account account = InstantiateAccount();
+            Assert.Throws<ArgumentException>(()=> {
+                account.withdraw(-100);
+            });
+        }
+        [Test]
         public void AccountCreatedWithNoTransactions()
         {
 

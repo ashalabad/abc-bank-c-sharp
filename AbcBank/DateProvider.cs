@@ -16,7 +16,7 @@ namespace AbcBank
 
         public DateTime now()
         {
-            return DateTime.Now;
+            return DateTime.UtcNow;
         }
     }
 }

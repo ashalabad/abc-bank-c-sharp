@@ -8,6 +8,15 @@ namespace AbcBank.Test
         private static readonly double DOUBLE_DELTA = 1e-15;
 
         [Test]
+        public void TestFirstCustomerThrowsExceptionIfNoCustomersExist()
+        {
+            Bank bank = new Bank();
+            Assert.Throws<System.ArgumentException>(()=> 
+            {
+                bank.getFirstCustomer();
+            });
+        }
+        [Test]
         public void TestFirstCustomerMustBeJohn()
         {
             Bank bank = new Bank();

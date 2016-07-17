@@ -14,6 +14,7 @@ namespace AbcBank
         public const int MAXI_SAVINGS = 2;
 
         private readonly int accountType;
+        private readonly object locker = new object();
         public List<Transaction> transactions;
 
         public Account(int accountType)
@@ -25,10 +26,8 @@ namespace AbcBank
         public void deposit(double amount)
         {
             if (amount <= 0)
-            {
                 throw new ArgumentException("amount must be greater than zero");
-            }
-            else
+            lock (locker)
             {
                 transactions.Add(new Transaction(amount));
             }
@@ -37,11 +36,11 @@ namespace AbcBank
         public void withdraw(double amount)
         {
             if (amount <= 0)
-            {
                 throw new ArgumentException("amount must be greater than zero");
-            }
-            else
+            lock (locker)
             {
+                if (sumTransactions() < amount)
+                    throw new ArgumentException("Insufficient funds");
                 transactions.Add(new Transaction(-amount));
             }
         }

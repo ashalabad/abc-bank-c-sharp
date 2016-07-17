@@ -45,16 +45,9 @@ namespace AbcBank
 
         public String getFirstCustomer()
         {
-            try
-            {
-                customers = null;
-                return customers[0].getName();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return "Error";
-            }
+            if (customers.Count == 0)
+                throw new ArgumentException("The bank has no customers");
+            return customers[0].getName();
         }
     }
 }
