@@ -49,6 +49,7 @@
     <Compile Include="CheckingAccountTest.cs" />
     <Compile Include="CustomerTest.cs" />
     <Compile Include="DateProviderTest.cs" />
+    <Compile Include="InterestCalculatorsTest.cs" />
     <Compile Include="MaxiSavingAccountTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavingAccountTest.cs" />

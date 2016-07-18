@@ -65,25 +65,25 @@ namespace AbcBank
             String s = "";
 
             //Translate to pretty account type
-            switch (a.getAccountType())
+            switch (a.AccountType)
             {
-                case Account.CHECKING:
+                case AccountType.CHECKING:
                     s += "Checking Account\n";
                     break;
-                case Account.SAVINGS:
+                case AccountType.SAVINGS:
                     s += "Savings Account\n";
                     break;
-                case Account.MAXI_SAVINGS:
+                case AccountType.MAXI_SAVINGS:
                     s += "Maxi Savings Account\n";
                     break;
             }
 
             //Now total up all the transactions
             double total = 0.0;
-            foreach (Transaction t in a.transactions)
+            foreach (Transaction t in a.Transactions)
             {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
+                s += "  " + (t.Amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.Amount) + "\n";
+                total += t.Amount;
             }
             s += "Total " + toDollars(total);
             return s;

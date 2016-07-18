@@ -3,7 +3,7 @@
 
 namespace AbcBank
 {
-    public class DateProvider
+    public class DateProvider:IDateProvider
     {
         private static DateProvider instance = null;
 

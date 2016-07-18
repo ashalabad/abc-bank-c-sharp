@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using AbcBank.Rules;
 
 namespace AbcBank.Test
 {
@@ -12,17 +13,17 @@ namespace AbcBank.Test
 
         protected override Account InstantiateAccount()
         {
-            return new Account(Account.MAXI_SAVINGS);
+            return new Account(AccountType.MAXI_SAVINGS, new MaxiSavingInterestCalculator(), DateProvider.getInstance());
         }
         [Test]
-        public void TestEarInterestOnTransactionLessThan1000()
+        public void TestEarnInterestOnTransactionLessThan1000()
         {
             Account account = InstantiateAccount();
             account.deposit(500.0);
             Assert.AreEqual(500.0 * 0.02, account.interestEarned(), DOUBLE_DELTA);
         }
         [Test]
-        public void TestEarInterestOnTransactionMoreThan1000()
+        public void TestEarnInterestOnTransactionMoreThan1000()
         {
             Account account = InstantiateAccount();
             account.deposit(1000.0);
@@ -32,7 +33,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void TestEarInterestOnTransactionMoreThan2000()
+        public void TestEarnInterestOnTransactionMoreThan2000()
         {
             Account account = InstantiateAccount();
             account.deposit(2500.0);

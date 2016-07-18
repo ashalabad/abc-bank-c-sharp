@@ -35,7 +35,7 @@ namespace AbcBank.Test
         {
 
             Account account = InstantiateAccount();
-            Assert.AreEqual(0, account.transactions.Count);
+            Assert.AreEqual(0, account.Transactions.Count());
             Assert.AreEqual(0, account.sumTransactions());
             Assert.AreEqual(0, account.interestEarned());
         }
@@ -45,7 +45,7 @@ namespace AbcBank.Test
         {
             Account account = InstantiateAccount();
             account.deposit(100.00d);
-            Assert.AreEqual(1, account.transactions.Count);
+            Assert.AreEqual(1, account.Transactions.Count());
             Assert.AreEqual(100.0d, account.sumTransactions());
         }
 
@@ -77,7 +77,7 @@ namespace AbcBank.Test
             account.deposit(100.0);
             account.deposit(200.0);
             account.withdraw(100.0);
-            Assert.AreEqual(3, account.transactions.Count);
+            Assert.AreEqual(3, account.Transactions.Count());
             Assert.AreEqual(200.0, account.sumTransactions());
         }
 
@@ -90,13 +90,13 @@ namespace AbcBank.Test
             account.deposit(200.0);
             Thread.Sleep(100);
             account.deposit(50.0);
-            Assert.AreEqual(3, account.transactions.Count);
-            Transaction t0 = account.transactions.ElementAt(0);
-            Assert.AreEqual(100,t0.amount);
-            Transaction t1 = account.transactions.ElementAt(1);
-            Assert.AreEqual(200,t1.amount);
-            Transaction t2 = account.transactions.ElementAt(2);
-            Assert.AreEqual(50, t2.amount);
+            Assert.AreEqual(3, account.Transactions.Count());
+            Transaction t0 = account.Transactions.ElementAt(0);
+            Assert.AreEqual(100,t0.Amount);
+            Transaction t1 = account.Transactions.ElementAt(1);
+            Assert.AreEqual(200,t1.Amount);
+            Transaction t2 = account.Transactions.ElementAt(2);
+            Assert.AreEqual(50, t2.Amount);
             //TODO: no way to verify the historic order of transactions
         }
         [Test]
@@ -106,7 +106,7 @@ namespace AbcBank.Test
             account.deposit(100.0);
             account.deposit(200.0);
             account.withdraw(100.0);
-            Assert.AreEqual(3, account.transactions.Count);
+            Assert.AreEqual(3, account.Transactions.Count());
             Assert.AreEqual(200.0, account.sumTransactions());
             
         }
@@ -146,7 +146,7 @@ namespace AbcBank.Test
             }
             Task.WaitAll(allTasks.ToArray());
             Assert.AreEqual(1000,total);
-            Assert.AreEqual(1001, account.transactions.Count);
+            Assert.AreEqual(1001, account.Transactions.Count());
             Assert.AreEqual(0.0,account.sumTransactions());
         }
         #endregion

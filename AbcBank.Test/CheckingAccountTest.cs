@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using AbcBank.Rules;
 
 namespace AbcBank.Test
 {
@@ -10,7 +11,7 @@ namespace AbcBank.Test
     {
         protected override Account InstantiateAccount()
         {
-            return new Account(Account.CHECKING);
+            return new Account(AccountType.CHECKING, new CheckingInterestCalculator(),DateProvider.getInstance());
         }
 
         /// <summary>

@@ -1,91 +1,105 @@
-﻿using System;
+﻿using AbcBank.Rules;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
+    /// <summary>
+    /// Defined accout types
+    /// </summary>
+    public enum AccountType
+    {
+        CHECKING = 0,
+        SAVINGS,
+        MAXI_SAVINGS
+    }
+
     public class Account
     {
-
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
-
-        private readonly int accountType;
-        private readonly object locker = new object();
-        public List<Transaction> transactions;
-
-        public Account(int accountType)
-        {
-            this.accountType = accountType;
-            this.transactions = new List<Transaction>();
+        public AccountType AccountType {
+            get;
+            private set;
         }
 
-        public void deposit(double amount)
+        public IEnumerable<Transaction> Transactions
         {
-            if (amount <= 0)
-                throw new ArgumentException("amount must be greater than zero");
+            get { return transactions; }
+        } 
+        private readonly object locker = new object();
+        private readonly List<Transaction> transactions;
+        private readonly IInterestCalculator interestCalculator;
+        private readonly IDateProvider dateProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Account"/> class.
+        /// </summary>
+        /// <param name="accountType">Type of the account.</param>
+        /// <param name="interestCalculator">The interest calculator.</param>
+        /// <param name="dateProvider">The date provider.</param>
+        public Account(AccountType accountType,IInterestCalculator interestCalculator,IDateProvider dateProvider)
+        {
+            AccountType = accountType;
+            transactions = new List<Transaction>();
+            this.interestCalculator = interestCalculator;
+            this.dateProvider = dateProvider;
+        }
+
+        /// <summary>
+        /// Deposits the specified amount to the account.
+        /// </summary>
+        /// <param name="amount">The amount.</param>
+        /// <returns>deposited amount</returns>
+        public double deposit(double amount)
+        {
+            amount.Positive();
             lock (locker)
             {
-                transactions.Add(new Transaction(amount));
+                transactions.Add(new Transaction(amount,dateProvider.now()));
+                return amount;
             }
         }
 
-        public void withdraw(double amount)
+        /// <summary>
+        /// Withdraws the specified amount from the account.
+        /// </summary>
+        /// <param name="amount">The amount.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentException">Insufficient funds</exception>
+        public double withdraw(double amount)
         {
-            if (amount <= 0)
-                throw new ArgumentException("amount must be greater than zero");
+            amount.Positive();
             lock (locker)
             {
                 if (sumTransactions() < amount)
                     throw new ArgumentException("Insufficient funds");
-                transactions.Add(new Transaction(-amount));
+                transactions.Add(new Transaction(-amount,dateProvider.now()));
+                return amount;
             }
         }
 
+        /// <summary>
+        /// Transfers the specified amount.
+        /// </summary>
+        /// <param name="amount">The amount to transfer</param>
+        /// <param name="from">Widthdraw from an account</param>
+        public void transfer(double amount, Account from)
+        {
+            amount.Positive();
+            deposit(from.withdraw(amount));
+        }
+        /// <summary>
+        /// Calculate earned interest
+        /// </summary>
+        /// <returns></returns>
         public double interestEarned()
         {
-            double amount = sumTransactions();
-            switch (accountType)
-            {
-                case SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.001;
-                    else
-                        return 1 + (amount - 1000) * 0.002;
-                // case SUPER_SAVINGS:
-                //     if (amount <= 4000)
-                //         return 20;
-                case MAXI_SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.02;
-                    if (amount <= 2000)
-                        return 20 + (amount - 1000) * 0.05;
-                    return 70 + (amount - 2000) * 0.1;
-                default:
-                    return amount * 0.001;
-            }
+            return interestCalculator.Calculate(transactions, dateProvider.now());
         }
 
         public double sumTransactions()
         {
-            return checkIfTransactionsExist(true);
+            return transactions.Sum(t => t.Amount);
         }
-
-        private double checkIfTransactionsExist(bool checkAll)
-        {
-            double amount = 0.0;
-            foreach (Transaction t in transactions)
-                amount += t.amount;
-            return amount;
-        }
-
-        public int getAccountType()
-        {
-            return accountType;
-        }
-
     }
 }
