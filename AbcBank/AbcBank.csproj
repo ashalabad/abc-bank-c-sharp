@@ -44,8 +44,12 @@
     <Compile Include="Bank.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="DateProvider.cs" />
+    <Compile Include="IAccountFactory.cs" />
     <Compile Include="IDateProvider.cs" />
+    <Compile Include="insufficientFundsException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer\TextBankRenderer.cs" />
+    <Compile Include="Renderer\TextCustomerRenderer.cs" />
     <Compile Include="Rules\CalcHelper.cs" />
     <Compile Include="Rules\CheckingInterestCalculator.cs" />
     <Compile Include="Rules\IInterestCalculator.cs" />
@@ -54,9 +58,7 @@
     <Compile Include="Transaction.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Renderer\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

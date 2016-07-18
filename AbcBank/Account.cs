@@ -24,10 +24,14 @@ namespace AbcBank
 
         public IEnumerable<Transaction> Transactions
         {
-            get { return transactions; }
+            get
+            {
+                lock(locker)
+                    return transactionsList.ToArray();
+            }
         } 
         private readonly object locker = new object();
-        private readonly List<Transaction> transactions;
+        private readonly List<Transaction> transactionsList;
         private readonly IInterestCalculator interestCalculator;
         private readonly IDateProvider dateProvider;
 
@@ -40,7 +44,7 @@ namespace AbcBank
         public Account(AccountType accountType,IInterestCalculator interestCalculator,IDateProvider dateProvider)
         {
             AccountType = accountType;
-            transactions = new List<Transaction>();
+            transactionsList = new List<Transaction>();
             this.interestCalculator = interestCalculator;
             this.dateProvider = dateProvider;
         }
@@ -55,7 +59,7 @@ namespace AbcBank
             amount.Positive();
             lock (locker)
             {
-                transactions.Add(new Transaction(amount,dateProvider.now()));
+                transactionsList.Add(new Transaction(amount,dateProvider.now()));
                 return amount;
             }
         }
@@ -72,21 +76,10 @@ namespace AbcBank
             lock (locker)
             {
                 if (sumTransactions() < amount)
-                    throw new ArgumentException("Insufficient funds");
-                transactions.Add(new Transaction(-amount,dateProvider.now()));
+                    throw new InsufficientFundsException("Insufficient funds");
+                transactionsList.Add(new Transaction(-amount,dateProvider.now()));
                 return amount;
             }
-        }
-
-        /// <summary>
-        /// Transfers the specified amount.
-        /// </summary>
-        /// <param name="amount">The amount to transfer</param>
-        /// <param name="from">Widthdraw from an account</param>
-        public void transfer(double amount, Account from)
-        {
-            amount.Positive();
-            deposit(from.withdraw(amount));
         }
         /// <summary>
         /// Calculate earned interest
@@ -94,12 +87,12 @@ namespace AbcBank
         /// <returns></returns>
         public double interestEarned()
         {
-            return interestCalculator.Calculate(transactions, dateProvider.now());
+            return interestCalculator.Calculate(Transactions, dateProvider.now());
         }
 
         public double sumTransactions()
         {
-            return transactions.Sum(t => t.Amount);
+             return Transactions.Sum(t => t.Amount);
         }
     }
 }

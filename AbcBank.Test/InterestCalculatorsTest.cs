@@ -119,7 +119,7 @@ namespace AbcBank.Test
                 new Transaction(1000,new DateTime(1970,1,1)),
             };
             MaxiSavingInterestCalculator calculator = new MaxiSavingInterestCalculator();
-            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 31));
+            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 27));
             Assert.AreEqual(50, amount, DOUBLE_DELTA);
         }
         //accumulate 5% interest rate for single transaction of 180 days
@@ -131,7 +131,7 @@ namespace AbcBank.Test
                 new Transaction(1000,new DateTime(1970,1,1)),
             };
             MaxiSavingInterestCalculator calculator = new MaxiSavingInterestCalculator();
-            double amount = calculator.Calculate(trx, new DateTime(1970, 7, 1));
+            double amount = calculator.Calculate(trx, new DateTime(1970, 6, 30));
             Assert.AreEqual(25, amount, DOUBLE_DELTA);
         }
         //Accumulate 5% interest rate for two transactions of 180 and 360 days
@@ -141,10 +141,10 @@ namespace AbcBank.Test
             Transaction[] trx = new[]
             {
                 new Transaction(1000,new DateTime(1970,1,1)),
-                new Transaction(1000,new DateTime(1970,7,1)),
+                new Transaction(1000,new DateTime(1970,6,30)),
             };
             MaxiSavingInterestCalculator calculator = new MaxiSavingInterestCalculator();
-            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 31));
+            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 30));
             Assert.AreEqual(75, amount, DOUBLE_DELTA);
         }
         // Accumulate 0.1% interest rate if there was a withdrawal within 10 days

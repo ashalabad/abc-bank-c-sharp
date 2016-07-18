@@ -6,6 +6,7 @@ namespace AbcBank.Test
     public class BankTest
     {
         private static readonly double DOUBLE_DELTA = 1e-15;
+        private IAccountFactory accountFactory=new AccountFactory(DateProvider.getInstance());
 
         [Test]
         public void TestFirstCustomerThrowsExceptionIfNoCustomersExist()
@@ -26,22 +27,12 @@ namespace AbcBank.Test
             string firstCustomerName = bank.getFirstCustomer();
             Assert.AreEqual("John",firstCustomerName);
         }
-        [Test]
-        public void customerSummary()
-        {
-            Bank bank = new Bank();
-            Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
-            bank.addCustomer(john);
-
-            Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
-        }
 
         [Test]
         public void checkingAccount()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.CHECKING);
+            Account checkingAccount = accountFactory.CreateAccount(AccountType.CHECKING);
             Customer bill = new Customer("Bill").openAccount(checkingAccount);
             bank.addCustomer(bill);
 
@@ -54,10 +45,10 @@ namespace AbcBank.Test
         public void savings_account()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            Account savingsAccount = accountFactory.CreateAccount(AccountType.SAVINGS);
+            bank.addCustomer(new Customer("Bill").openAccount(savingsAccount));
 
-            checkingAccount.deposit(1500.0);
+            savingsAccount.deposit(1500.0);
 
             Assert.AreEqual(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
@@ -66,9 +57,9 @@ namespace AbcBank.Test
         public void maxi_savings_account()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
-            checkingAccount.deposit(3000.0);
+            Account maxiSavingsAccount = accountFactory.CreateAccount(AccountType.MAXI_SAVINGS);
+            bank.addCustomer(new Customer("Bill").openAccount(maxiSavingsAccount));
+            maxiSavingsAccount.deposit(3000.0);
             Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
 
@@ -78,9 +69,9 @@ namespace AbcBank.Test
             Bank bank = new Bank();
             Account saving, maxiSaving, checking;
             Customer bill=new Customer("Bill")
-                .openAccount(checking=new Account(Account.CHECKING))
-                .openAccount(maxiSaving=new Account(Account.MAXI_SAVINGS))
-                .openAccount(saving=new Account(Account.SAVINGS));            
+                .openAccount(checking = accountFactory.CreateAccount(AccountType.CHECKING))
+                .openAccount(maxiSaving = accountFactory.CreateAccount(AccountType.MAXI_SAVINGS))
+                .openAccount(saving = accountFactory.CreateAccount(AccountType.SAVINGS));            
             bank.addCustomer(bill);
             saving.deposit(3000);
             checking.deposit(1000);
@@ -95,15 +86,15 @@ namespace AbcBank.Test
             Bank bank = new Bank();
             Account billSaving, billMaxiSaving, billChecking;
             Customer bill = new Customer("Bill")
-                .openAccount(billChecking = new Account(Account.CHECKING))
-                .openAccount(billMaxiSaving = new Account(Account.MAXI_SAVINGS))
-                .openAccount(billSaving = new Account(Account.SAVINGS));
+                .openAccount(billChecking = accountFactory.CreateAccount(AccountType.CHECKING))
+                .openAccount(billMaxiSaving = accountFactory.CreateAccount(AccountType.MAXI_SAVINGS))
+                .openAccount(billSaving = accountFactory.CreateAccount(AccountType.SAVINGS));
             bank.addCustomer(bill);
             Account oscarSaving, oscarMaxiSaving, oscarChecking;
             Customer oscar = new Customer("Oscar")
-                .openAccount(oscarChecking = new Account(Account.CHECKING))
-                .openAccount(oscarMaxiSaving = new Account(Account.MAXI_SAVINGS))
-                .openAccount(oscarSaving = new Account(Account.SAVINGS));
+                .openAccount(oscarChecking = accountFactory.CreateAccount(AccountType.CHECKING))
+                .openAccount(oscarMaxiSaving = accountFactory.CreateAccount(AccountType.MAXI_SAVINGS))
+                .openAccount(oscarSaving = accountFactory.CreateAccount(AccountType.SAVINGS));
             bank.addCustomer(oscar);
             billSaving.deposit(3000);
             billChecking.deposit(1000);

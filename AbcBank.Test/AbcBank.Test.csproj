@@ -47,6 +47,7 @@
     <Compile Include="AccountTest.cs" />
     <Compile Include="BankTest.cs" />
     <Compile Include="CheckingAccountTest.cs" />
+    <Compile Include="TextRendererTest.cs" />
     <Compile Include="CustomerTest.cs" />
     <Compile Include="DateProviderTest.cs" />
     <Compile Include="InterestCalculatorsTest.cs" />

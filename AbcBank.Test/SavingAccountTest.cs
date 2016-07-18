@@ -13,7 +13,7 @@ namespace AbcBank.Test
 
         protected override Account InstantiateAccount()
         {
-            return new Account(AccountType.SAVINGS,new MaxiSavingInterestCalculator(), DateProvider.getInstance());
+            return new Account(AccountType.SAVINGS,new SavingInterestCalculator(), DateProvider.getInstance());
         }
 
         [Test]

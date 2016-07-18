@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
     public class Bank
     {
+        /// <summary>
+        /// Gets the customers.
+        /// </summary>
+        /// <value>
+        /// The customers.
+        /// </value>
+        public IEnumerable<Customer> Customers
+        {
+            get { return customers.ToArray(); }
+        }
         private List<Customer> customers;
 
         public Bank()
@@ -18,21 +25,6 @@ namespace AbcBank
         public void addCustomer(Customer customer)
         {
             customers.Add(customer);
-        }
-
-        public String customerSummary()
-        {
-            String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
-            return summary;
-        }
-
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
-        {
-            return number + " " + (number == 1 ? word : word + "s");
         }
 
         public double totalInterestPaid()

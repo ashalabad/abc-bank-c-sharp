@@ -52,7 +52,7 @@ namespace AbcBank.Test
         [Test]
         public void WithdrawalFromEmptyAccountShouldThrowException()
         {
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<InsufficientFundsException>(() =>
             {
                 Account account = InstantiateAccount();
                 account.withdraw(100.0);
@@ -62,7 +62,7 @@ namespace AbcBank.Test
         [Test]
         public void WithdrawalMoreThanAccountHasShouldThrowException()
         {
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<InsufficientFundsException>(() =>
             {
                 Account account = InstantiateAccount();
                 account.deposit(50.0);

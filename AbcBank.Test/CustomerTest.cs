@@ -1,10 +1,13 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Linq;
+using NUnit.Framework;
 
 namespace AbcBank.Test
 {
     [TestFixture]
     public class CustomerTest
     {
+        private readonly IAccountFactory accountFactory=new AccountFactory(DateProvider.getInstance());
         [Test]
         public void TestNewCustomerShouldNotHaveAccounts()
         {
@@ -12,37 +15,11 @@ namespace AbcBank.Test
             Assert.AreEqual("Henry",henry.getName());
             Assert.AreEqual(0,henry.getNumberOfAccounts());
         }
-        [Test] //Test customer statement generation
-        public void TestRenderCustomerStatement()
-        {
-
-            Account checkingAccount = new Account(Account.CHECKING);
-            Account savingsAccount = new Account(Account.SAVINGS);
-
-            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
-
-            checkingAccount.deposit(100.0);
-            savingsAccount.deposit(4000.0);
-            savingsAccount.withdraw(200.0);
-
-            Assert.AreEqual("Statement for Henry\n" +
-                    "\n" +
-                    "Checking Account\n" +
-                    "  deposit $100.00\n" +
-                    "Total $100.00\n" +
-                    "\n" +
-                    "Savings Account\n" +
-                    "  deposit $4,000.00\n" +
-                    "  withdrawal $200.00\n" +
-                    "Total $3,800.00\n" +
-                    "\n" +
-                    "Total In All Accounts $3,900.00", henry.getStatement());
-        }
 
         [Test]
         public void testOneAccount()
         {
-            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
+            Customer oscar = new Customer("Oscar").openAccount(accountFactory.CreateAccount(AccountType.SAVINGS));
             Assert.AreEqual(1, oscar.getNumberOfAccounts());
         }
 
@@ -50,8 +27,8 @@ namespace AbcBank.Test
         public void testTwoAccount()
         {
             Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
+                    .openAccount(accountFactory.CreateAccount(AccountType.SAVINGS));
+            oscar.openAccount(accountFactory.CreateAccount(AccountType.CHECKING));
             Assert.AreEqual(2, oscar.getNumberOfAccounts());
         }
 
@@ -59,21 +36,90 @@ namespace AbcBank.Test
         public void testThreeAcounts()
         {
             Customer oscar = new Customer("Oscar")
-                .openAccount(new Account(Account.SAVINGS))
-                .openAccount(new Account(Account.CHECKING))
-                .openAccount(new Account(Account.MAXI_SAVINGS));
+                .openAccount(accountFactory.CreateAccount(AccountType.SAVINGS))
+                .openAccount(accountFactory.CreateAccount(AccountType.CHECKING))
+                .openAccount(accountFactory.CreateAccount(AccountType.MAXI_SAVINGS));
                     
             Assert.AreEqual(3, oscar.getNumberOfAccounts());
+            Assert.AreEqual(3,oscar.Accounts.Count());
         }
 
+        [Test]
+        public void TestTotalBalanceOnAllAccounts()
+        {
+            Account checking, saving, maxisaving;
+            Customer oscar = new Customer("Oscar")
+                .openAccount(saving=accountFactory.CreateAccount(AccountType.SAVINGS))
+                .openAccount(checking=accountFactory.CreateAccount(AccountType.CHECKING))
+                .openAccount(maxisaving=accountFactory.CreateAccount(AccountType.MAXI_SAVINGS));
+            checking.deposit(1000);
+            saving.deposit(1000);
+            maxisaving.deposit(1000);
+            saving.withdraw(500);
+            Assert.AreEqual(2500,oscar.Balance);
+        }
 
+        [Test]
+        public void TestTransferBetweenAccount()
+        {
+            Account checking, saving;
+            Customer oscar = new Customer("Oscar")
+                .openAccount(saving = accountFactory.CreateAccount(AccountType.SAVINGS))
+                .openAccount(checking = accountFactory.CreateAccount(AccountType.CHECKING));
+            saving.deposit(1000);
+            oscar.transfer(500,saving,checking);
+            Assert.AreEqual(1000, oscar.Balance);
+            Assert.AreEqual(500,saving.sumTransactions());
+            Assert.AreEqual(500, checking.sumTransactions());
+
+        }
+
+        [Test]
+        public void TestTransferBetweenAccountInsufficientFunds()
+        {
+            Account checking, saving;
+            Customer oscar = new Customer("Oscar")
+                .openAccount(saving = accountFactory.CreateAccount(AccountType.SAVINGS))
+                .openAccount(checking = accountFactory.CreateAccount(AccountType.CHECKING));
+            saving.deposit(1000);
+            Assert.Throws<InsufficientFundsException>(() =>
+            {
+                oscar.transfer(5000, saving, checking);
+            });
+            
+        }
+
+        [Test]
+        public void TestTransferBetweenAccountAccountFromDoesNotBelongToCustomer()
+        {
+            Account checking, saving = accountFactory.CreateAccount(AccountType.SAVINGS);
+            Customer oscar = new Customer("Oscar").openAccount(checking = accountFactory.CreateAccount(AccountType.CHECKING));
+            saving.deposit(1000);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                oscar.transfer(500, saving, checking);    
+            });
+        }
+
+        [Test]
+        public void TestTransferBetweenAccountAccountToDoesNotBelongToCustomer()
+        {
+            Account checking, saving = accountFactory.CreateAccount(AccountType.SAVINGS);
+            Customer oscar = new Customer("Oscar").openAccount(checking = accountFactory.CreateAccount(AccountType.CHECKING));
+            checking.deposit(1000);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                oscar.transfer(500, checking, saving);
+            });
+
+        }
         [Test]
         public void TestTotalInterestEarningOnAllAccounts()
         {
             Customer oscar = new Customer("Oscar");
-            Account checking=new Account(Account.CHECKING);
-            Account saving=new Account(Account.SAVINGS);
-            Account maxiSaving = new Account(Account.SAVINGS);
+            Account checking = accountFactory.CreateAccount(AccountType.CHECKING);
+            Account saving = accountFactory.CreateAccount(AccountType.SAVINGS);
+            Account maxiSaving = accountFactory.CreateAccount(AccountType.MAXI_SAVINGS);
             oscar.openAccount(checking).openAccount(saving).openAccount(maxiSaving);
             Assert.AreEqual(3, oscar.getNumberOfAccounts());
             checking.deposit(1000);
