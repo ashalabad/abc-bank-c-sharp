@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using System;
+using AbcBank.Rules;
 
 namespace AbcBank.Test
 {
@@ -56,11 +58,16 @@ namespace AbcBank.Test
         [Test]
         public void maxi_savings_account()
         {
+            DateTime nowDate=new DateTime(1970,1,1);
+            TestDateProvider provider = new TestDateProvider(() => nowDate);
             Bank bank = new Bank();
-            Account maxiSavingsAccount = accountFactory.CreateAccount(AccountType.MAXI_SAVINGS);
+            Account maxiSavingsAccount = new AccountFactory(provider).CreateAccount(AccountType.MAXI_SAVINGS);
             bank.addCustomer(new Customer("Bill").openAccount(maxiSavingsAccount));
             maxiSavingsAccount.deposit(3000.0);
-            Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            //change current date to 1970/6/30
+            nowDate = nowDate + new TimeSpan(180, 0, 0, 0);
+            double expected = 3000.0d.DailyInterest(5.0, 180);
+            Assert.AreEqual(expected, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
 
         [Test]

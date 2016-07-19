@@ -144,7 +144,7 @@ namespace AbcBank.Test
                 new Transaction(1000,new DateTime(1970,6,30)),
             };
             MaxiSavingInterestCalculator calculator = new MaxiSavingInterestCalculator();
-            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 30));
+            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 27));
             Assert.AreEqual(75, amount, DOUBLE_DELTA);
         }
         // Accumulate 0.1% interest rate if there was a withdrawal within 10 days
@@ -153,14 +153,13 @@ namespace AbcBank.Test
         {
             Transaction[] trx = new[]
             {
-                new Transaction(1000,new DateTime(1970,1,1)),
-                new Transaction(1000, new DateTime(1970,7,1)),
+                new Transaction(2000,new DateTime(1970,1,1)),
                 new Transaction(-1000, new DateTime(1970,12,26))
             };
             MaxiSavingInterestCalculator calculator = new MaxiSavingInterestCalculator();
-            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 31));
-            double expected = 1000.0.DailyInterest(0.1, 360) + 1000.0.DailyInterest(0.1, 175);
-            Assert.AreEqual(expected, amount);
+            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 27));
+            double expected = 2000.0.DailyInterest(0.1, 359) + 1000.0.DailyInterest(0.1, 1);
+            Assert.AreEqual(expected, amount, DOUBLE_DELTA);
         }
         //Accumulate 5% interest rate if there was a withdrawal older than 10 days
         [Test]
@@ -168,14 +167,15 @@ namespace AbcBank.Test
         {
             Transaction[] trx = new[]
             {
-                new Transaction(1000,new DateTime(1970,1,1)),
-                new Transaction(1000, new DateTime(1970,2,1)),
-                new Transaction(-1000, new DateTime(1970,2,15))
+                new Transaction(2000,new DateTime(1970,1,1)),
+                new Transaction(-1000, new DateTime(1970,6,30))
             };
             MaxiSavingInterestCalculator calculator = new MaxiSavingInterestCalculator();
-            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 31));
-            double expected = 1000.0.DailyInterest(5.0, 80) + 1000.0.DailyInterest(5.0, 360) + 1000.0.DailyInterest(5.0, 80);
-            Assert.AreEqual(expected, amount);        
+            double amount = calculator.Calculate(trx, new DateTime(1970, 12, 27));
+            double expected =
+                2000.0.DailyInterest(5.0, 180)
+                + 1000.0.DailyInterest(5.0,180);
+            Assert.AreEqual(expected, amount, DOUBLE_DELTA);        
 
         }
         #endregion

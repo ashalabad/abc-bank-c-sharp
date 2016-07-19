@@ -44,9 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountFactoryTest.cs" />
     <Compile Include="AccountTest.cs" />
     <Compile Include="BankTest.cs" />
     <Compile Include="CheckingAccountTest.cs" />
+    <Compile Include="TestDateProvider.cs" />
     <Compile Include="TextRendererTest.cs" />
     <Compile Include="CustomerTest.cs" />
     <Compile Include="DateProviderTest.cs" />

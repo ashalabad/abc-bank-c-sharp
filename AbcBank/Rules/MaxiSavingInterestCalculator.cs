@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank.Rules
 {
@@ -24,7 +22,7 @@ namespace AbcBank.Rules
         {
             Transaction[] trxToDate = transactions.Where(t => t.Date.CompareTo(cutOffDate) <= 0).ToArray();
             Transaction lastWidthdrawal = trxToDate.LastOrDefault(t => t.Amount < 0);
-            double rate = lastWidthdrawal != null ? ((cutOffDate - lastWidthdrawal.Date).Days<=10?1.0:5.0) : 5.0;
+            double rate = lastWidthdrawal != null ? ((cutOffDate - lastWidthdrawal.Date).Days<=10?0.1:5.0) : 5.0;
             return RecursiveCalc(cutOffDate, rate, trxToDate, 0, 0);
         }
         // recursive function to calculate interest
